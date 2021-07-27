@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Weather</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        
+        <style>
+            div.citation {
+                text-align: center;
+                color: red;
+            }
+            hr.endSection {
+            border: 3px solid red;
+            border-radius: 5px;
+            }
+            hr.hourSeparator {
+            border: 2px solid black;
+            border-radius: 3px;
+            }
+        </style>
+    </head>
+
+    <body style="background-color:lightblue;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="citation"><a id="Top" href="https://darksky.net/poweredby/" target="_blank"><h1><strong>Powered by DarkSky</strong></h1></a></div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <form method="POST">
+                        <div class="form-group">
+                            <h1>Weather Forecast</h1>
+                            <input class="form-control" id="input" name="text" placeholder="Enter City and State">
+                        </div>
+                        <input type="submit" type="text" value="Get Weather">
+                    </form>
+                    <br>
+                    <button id="button_GPS">My Location</button>
+                    <script>
+                        // var x = document.getElementById("demo");
+                        document.getElementById("button_GPS").onclick = function() {getLocation()};
+
+                        function getLocation() {
+                          if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(showPosition);
+                          } 
+                        }
+                        
+                        function showPosition(position) {
+                            document.getElementById("input").value = position.coords.latitude + ", "
+                           + position.coords.longitude;
+                           document.getElementById("button").click;
+                        }
+                    </script>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h1>For {{ data[0] }}:</h1>
+                </div>
+            </div>
+        
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>
+                        <a class="scroll" id="scroll" href="#HourlyTop">Jump to Hourly</a>
+                        <br><a class="scroll" id="scroll" href="#DailyTop">Jump to Daily</a>
+                        {% if data[5][0] != "CLEAR" %}
+                        <br><a class="scroll" id="scroll" href="#AlertsTop">Jump to Alerts</a>
+                        {% endif %}
+                    </h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Right Now ({{ data[1]['time'] }}): <br>{{ data[1]['summary'] }}  {{ data[1]['temperature'] }}</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- <h3>Temperature: {{ data[1]['temperature'] }}</h3> -->
+                    <h3>Feels Like {{ data[1]['apparentTemperature'] }}</h3>
+                    <h3>UV Index: {{ data[1]['uvIndex'] }}</h3>
+                    <h3>Humidity: {{ data[1]['humidity'] }}</h3>
+                    <h3>Wind Speed: {{ data[1]['windSpeed'] }}</h3>
+                    <h3>Wind Gust: {{ data[1]['windGust'] }}</h3>                    
+                </div>
+                <div class="col-md-6">
+                    <h3>Cloud Coverage: {{ data[1]['cloudCover'] }}</h3>                    
+                    <h3>Chance of precipitation: {{ data[1]['precipProbability'] }}</h3>
+                    <h3>{{ data[1]['precipIntensity'] }} inches per hour</h3>                    
+                    <h3>Next Hour: {{ data[4] }}</h3>
+                </div>
+            </div>
+        </div>
+        <hr class="endSection">
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>
+                        <a class="scroll" id="scroll" href="#Top">Jump to Top</a>
+                    <br><a class="scroll" id="scroll" href="#DailyTop">Jump to Daily</a>
+                    {% if data[5][0] != "CLEAR" %}
+                    <br><a class="scroll" id="scroll" href="#AlertsTop">Jump to Alerts</a>
+                    {% endif %}
+                </h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                        <h1><a id="HourlyTop">Hourly: </a></h1>
+                </div>
+            </div>
+            <div class="row">
+                {% for hours in data[2] %}
+                <div class="col-md-12">
+                        <h2>{{ hours['time'] }}: {{ hours['summary'] }}  {{ hours['temperature'] }}</h2>
+                </div>
+                <div class="col-md-6">
+                    <h3>Feels Like {{ hours['apparentTemperature'] }}</h3>
+                    <h3>UV Index: {{ hours['uvIndex'] }}</h3>
+                    <h3>Humidity: {{ hours['humidity'] }}</h3>                    
+                    <h3>Wind: {{ hours['windSpeed'] }}</h3>
+                    <h3>Wind Gust: {{ hours['windGust'] }}</h3>
+                    
+                    
+                </div>
+                <div class="col-md-6">
+                    <h3>Cloud Coverage: {{ hours['cloudCover'] }}</h3>
+                    <h3>Chance of precipitation: {{ hours['precipProbability'] }}</h3>
+                    <h3>{{ hours['precipIntensity'] }} inches per hour</h3>
+                    {% if "precipAccumulation" in hours %}
+                    <h3>Snow Accumulation: {{ hours['precipAccumulation'] }} inches</h3>
+                    {% endif %}
+                </div>
+                <div class="col-md-12"><hr class="hourSeparator"></div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <hr class="endSection">
+
+        <div class="container">
+            <div class="row">
+                    <h3>
+                        <a class="scroll" id="scroll" href="#Top">Jump to Top</a>
+                        <br><a class="scroll" id="scroll" href="#HourlyTop">Jump to Hourly</a>
+                        {% if data[5][0] != "CLEAR" %}
+                        <br><a class="scroll" id="scroll" href="#AlertsTop">Jump to Alerts</a>
+                        {% endif %}
+                </h3>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h1><a id="DailyTop">Daily:</a></h1>
+                </div>
+            </div>
+            <div class="row">
+                {% for days in data[3] %} 
+                <div class="col-md-12">
+                        <h2>{{ days['time'] }}: {{ days['summary'] }}</h2>
+                </div>
+                <div class="col-md-6">
+                    
+                    <h3>Low of {{ days['temperatureLow'] }} at {{ days['temperatureLowTime'] }}</h3>
+                    <h3>High of {{ days['temperatureHigh'] }} at {{ days['temperatureHighTime'] }}</h3>
+                    <h3>Daylight from {{ days['sunriseTime'] }} to {{ days['sunsetTime'] }}</h3>
+                    <h3>UV Index High: {{ days['uvIndex'] }} at {{ days['uvIndexTime'] }}</h3>
+                    <h3>Humidity: {{ days['humidity'] }}</h3>
+
+                    
+                </div>
+                <div class="col-md-6">
+                    <h3>Wind: {{ days['windSpeed'] }} MPH</h3>
+                    <h3>Wind Gust: {{ days['windGust'] }}</h3>
+                    <h3>Cloud Coverage: {{ days['cloudCover'] }}</h3>
+                    <h3>{{ days['precipProbability'] }} chance of {{ days['precipType'] }}</h3>
+                    <h3>Heaviest at {{ days['precipIntensityMaxTime'] }} ({{ days['precipIntensityMax'] }} inches per hour)</h3>
+                    {% if "precipAccumulation" in days %}
+                    <h3>Snow Accumulation: {{ days['precipAccumulation'] }} inches</h3>
+                    {% endif %}
+                </div>
+                <div class="col-md-12"><hr class="hourSeparator"></div>
+                {% endfor %}
+            </div>
+            <div class="row">
+                    <h3><a class="scroll" id="scroll" href="#Top">Jump to Top</a>
+                    <br><a class="scroll" id="scroll" href="#HourlyTop">Jump to Hourly</a>
+                    <br><a class="scroll" id="scroll" href="#DailyTop">Jump to Daily</a></h3>
+                </div>
+        </div>
+     
+        {% if data[5][0] != "CLEAR" %}
+            <hr class="endSection">
+            <div class="container">
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <a id="AlertsTop"><h1>ALERTS:</h1></a>
+                    </div>
+                </div>
+                {% for x in data[5] %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3>{{ x }}</h3>
+                    </div>
+                    <div class="col-md-12"><hr class="hourSeparator"></div>
+                </div>
+                {% endfor %}
+                
+            </div>
+        {% endif %}
+   
+    </body>
+</html>
